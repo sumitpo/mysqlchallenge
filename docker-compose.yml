@@ -1,0 +1,28 @@
+services:
+  db:
+    image: mysql:latest
+    container_name: mysqlChallege
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: toor
+      MYSQL_USER: ghost
+      MYSQL_PASSWORD: ghost
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  init:
+    image: mysql:8.0.40-debian
+    depends_on:
+      - db
+    entrypoint: /bin/bash -c "apt-get update && apt-get install -y curl unzip && curl https://www.mysqltutorial.org/wp-content/uploads/2023/10/mysqlsampledatabase.zip -o mysqlsampledatabase.zip && unzip mysqlsampledatabase.zip && mv mysqlsampledatabase.sql /init.sql && mysql -h db -u root -ptoor < /init.sql"
+    environment:
+      MYSQL_ROOT_PASSWORD: toor
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
+
